@@ -34,6 +34,8 @@ func init() {
 				redisInstance.ClusterUrl = strings.Split(value, ";")
 			case "DEPLOY_TYPE":
 				redisInstance.RedisType = value
+			case "PASSWORD":
+				redisInstance.Password = value
 			}
 		}
 	}
