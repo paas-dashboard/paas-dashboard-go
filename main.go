@@ -24,11 +24,13 @@ func main() {
 	controllers.RegisterKafkaControllers()
 	controllers.RegisterKubernetesControllers()
 	controllers.RegisterPulsarControllers()
+	controllers.RegisterRedisControllers()
 
 	web.Router("/", &controllers.MainController{}, "get:RedirectToIndex")
 	web.Router("/**", &controllers.MainController{}, "get:RedirectToIndex")
 
 	// Run the app
 	web.BConfig.Listen.HTTPPort = 11111
+	web.BConfig.CopyRequestBody = true
 	web.Run()
 }
