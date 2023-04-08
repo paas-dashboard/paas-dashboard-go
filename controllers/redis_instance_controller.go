@@ -28,12 +28,12 @@ func init() {
 			redisInstance := redisInstanceMap[name]
 
 			switch confProperty {
+			case "DEPLOY_TYPE":
+				redisInstance.RedisType = value
 			case "URL":
 				redisInstance.Url = value
 			case "CLUSTER_URL":
 				redisInstance.ClusterUrl = strings.Split(value, ";")
-			case "DEPLOY_TYPE":
-				redisInstance.RedisType = value
 			case "PASSWORD":
 				redisInstance.Password = value
 			}

@@ -14,10 +14,10 @@ const (
 )
 
 type RedisInstance struct {
+	RedisType  string   `json:"redis_type"`
 	Name       string   `json:"name"`
 	Url        string   `json:"url"`
 	ClusterUrl []string `json:"cluster_url"`
-	RedisType  string   `json:"redis_type"`
 	Password   string   `json:"password"`
 }
 
