@@ -9,7 +9,7 @@ import (
 
 func main() {
 	root := filepath.Join(".", "static")
-	web.SetStaticPath("/static", root)
+	web.SetStaticPath("/", root)
 
 	// CORS settings
 	web.InsertFilter("*", web.BeforeRouter, cors.Allow(&cors.Options{
@@ -27,7 +27,18 @@ func main() {
 	controllers.RegisterRedisControllers()
 
 	web.Router("/", &controllers.MainController{}, "get:RedirectToIndex")
-	web.Router("/**", &controllers.MainController{}, "get:RedirectToIndex")
+	web.Router("/kafka", &controllers.MainController{}, "get:RedirectToIndex")
+	web.Router("/kafka/**", &controllers.MainController{}, "get:RedirectToIndex")
+	web.Router("/kubernetes", &controllers.MainController{}, "get:RedirectToIndex")
+	web.Router("/kubernetes/**", &controllers.MainController{}, "get:RedirectToIndex")
+	web.Router("/mongo", &controllers.MainController{}, "get:RedirectToIndex")
+	web.Router("/mongo/**", &controllers.MainController{}, "get:RedirectToIndex")
+	web.Router("/pulsar", &controllers.MainController{}, "get:RedirectToIndex")
+	web.Router("/pulsar/**", &controllers.MainController{}, "get:RedirectToIndex")
+	web.Router("/redis", &controllers.MainController{}, "get:RedirectToIndex")
+	web.Router("/redis/**", &controllers.MainController{}, "get:RedirectToIndex")
+	web.Router("/rocketmq", &controllers.MainController{}, "get:RedirectToIndex")
+	web.Router("/rocketmq/**", &controllers.MainController{}, "get:RedirectToIndex")
 
 	// Run the app
 	web.BConfig.Listen.HTTPPort = 11111
