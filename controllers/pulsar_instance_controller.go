@@ -52,3 +52,7 @@ func (p *PulsarInstancesController) Get() {
 	p.Data["json"] = instances
 	_ = p.ServeJSON()
 }
+
+func GetPulsarInstance() map[string]*module.PulsarInstance {
+	return pulsarInstanceMap
+}
