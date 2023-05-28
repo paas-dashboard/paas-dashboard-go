@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/beego/beego/v2 v2.0.7
 	github.com/go-zookeeper/zk v1.0.3
+	github.com/google/uuid v1.3.0
 	github.com/protocol-laboratory/pulsar-admin-go v0.0.0-20230526085042-4fbf996be670
 	github.com/redis/go-redis/v9 v9.0.3
 	k8s.io/api v0.26.3
@@ -36,7 +37,6 @@ require (
 	github.com/google/gnostic v0.5.7-v3refs // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
