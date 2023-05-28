@@ -3,11 +3,14 @@ package main
 import (
 	"github.com/beego/beego/v2/server/web"
 	"github.com/beego/beego/v2/server/web/filter/cors"
+	"paas-dashboard-go/checker"
 	"paas-dashboard-go/controllers"
 	"path/filepath"
 )
 
 func main() {
+	checker.Start()
+
 	root := filepath.Join(".", "static")
 	web.SetStaticPath("/", root)
 

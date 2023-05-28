@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var pulsarInstanceMap = make(map[string]*module.PulsarInstance)
+var PulsarInstanceMap = make(map[string]*module.PulsarInstance)
 
 func init() {
 	prefix := "PD_PULSAR_"
@@ -23,10 +23,10 @@ func init() {
 			name := strings.ToLower(key[:index])
 			confProperty := key[index+1:]
 
-			if _, ok := pulsarInstanceMap[name]; !ok {
-				pulsarInstanceMap[name] = &module.PulsarInstance{Name: name}
+			if _, ok := PulsarInstanceMap[name]; !ok {
+				PulsarInstanceMap[name] = &module.PulsarInstance{Name: name}
 			}
-			pulsarInstance := pulsarInstanceMap[name]
+			pulsarInstance := PulsarInstanceMap[name]
 
 			switch confProperty {
 			case "HOST":
@@ -45,8 +45,8 @@ type PulsarInstancesController struct {
 }
 
 func (p *PulsarInstancesController) Get() {
-	instances := make([]*module.PulsarInstance, 0, len(pulsarInstanceMap))
-	for _, instance := range pulsarInstanceMap {
+	instances := make([]*module.PulsarInstance, 0, len(PulsarInstanceMap))
+	for _, instance := range PulsarInstanceMap {
 		instances = append(instances, instance)
 	}
 	p.Data["json"] = instances
