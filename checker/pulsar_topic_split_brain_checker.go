@@ -1,8 +1,8 @@
 package checker
 
 import (
-	"github.com/beego/beego/v2/core/logs"
 	"github.com/protocol-laboratory/pulsar-admin-go/padmin"
+	"github.com/sirupsen/logrus"
 	"os"
 	"paas-dashboard-go/module"
 	"strconv"
@@ -13,7 +13,7 @@ import (
 func pulsarTopicSplitBrainCheck(instance *module.PulsarInstance) {
 	defer func() {
 		if err := recover(); err != nil {
-			logs.Error("panic:", err)
+			logrus.Errorf("panic:%v", err)
 			return
 		}
 	}()
@@ -21,7 +21,7 @@ func pulsarTopicSplitBrainCheck(instance *module.PulsarInstance) {
 	if err != nil {
 		panic(err)
 	}
-	logs.Info("check hosts list:%v", hosts)
+	logrus.Infof("check hosts list:%v", hosts)
 	var srcAdmin *padmin.PulsarAdmin
 	var destAdmin []*padmin.PulsarAdmin
 	for _, host := range hosts {
@@ -49,22 +49,22 @@ func pulsarTopicSplitBrainCheck(instance *module.PulsarInstance) {
 	}
 	ticker := time.NewTicker(time.Duration(interval) * time.Second)
 	for range ticker.C {
-		logs.Info("pulsar instance:[%s] topic split brain check start.", instance.Name)
+		logrus.Infof("pulsar instance:[%s] topic split brain check start.", instance.Name)
 		checkInterval(srcAdmin, destAdmin)
-		logs.Info("pulsar instance:[%s] topic split brain check done.", instance.Name)
+		logrus.Infof("pulsar instance:[%s] topic split brain check done.", instance.Name)
 	}
 }
 
 func checkInterval(srcAdmin *padmin.PulsarAdmin, destAdmin []*padmin.PulsarAdmin) {
 	tenantList, err := srcAdmin.Tenants.List()
 	if err != nil {
-		logs.Error("[check split brain]src get tenant list failed: %v", err)
+		logrus.Errorf("[check split brain]src get tenant list failed: %v", err)
 		return
 	}
 	for _, tenant := range tenantList {
 		namespaceList, err := srcAdmin.Namespaces.List(tenant)
 		if err != nil {
-			logs.Error("[check split brain]src get tenant %s namespace failed: %v", tenant, err)
+			logrus.Errorf("[check split brain]src get tenant %s namespace failed: %v", tenant, err)
 			return
 		}
 		for _, namespace := range namespaceList {
@@ -73,7 +73,7 @@ func checkInterval(srcAdmin *padmin.PulsarAdmin, destAdmin []*padmin.PulsarAdmin
 
 			topicList, err := srcAdmin.PersistentTopics.ListNamespaceTopics(tenant, ns)
 			if err != nil {
-				logs.Error("[check split brain]src get tenant %s namespace %s topic list fail: %v", tenant, ns, err)
+				logrus.Errorf("[check split brain]src get tenant %s namespace %s topic list fail: %v", tenant, ns, err)
 				return
 			}
 			for _, v := range topicList {
@@ -82,14 +82,14 @@ func checkInterval(srcAdmin *padmin.PulsarAdmin, destAdmin []*padmin.PulsarAdmin
 
 				srcData, err := srcAdmin.Lookup.GetOwner(padmin.TopicDomainPersistent, tenant, ns, topic)
 				if err != nil {
-					logs.Error("[check split brain][tenant:%s namespace:%s topic:%s] get owner fail: %v", tenant, ns, topic, err)
+					logrus.Errorf("[check split brain][tenant:%s namespace:%s topic:%s] get owner fail: %v", tenant, ns, topic, err)
 					continue
 				}
 				var destData *padmin.LookupData
 				for _, admin := range destAdmin {
 					destData, err = admin.Lookup.GetOwner(padmin.TopicDomainPersistent, tenant, ns, topic)
 					if err != nil {
-						logs.Error("[check split brain][tenant:%s namespace:%s topic:%s] get owner fail: %v", tenant, ns, topic, err)
+						logrus.Errorf("[check split brain][tenant:%s namespace:%s topic:%s] get owner fail: %v", tenant, ns, topic, err)
 						continue
 					}
 				}
@@ -101,28 +101,28 @@ func checkInterval(srcAdmin *padmin.PulsarAdmin, destAdmin []*padmin.PulsarAdmin
 
 func eq(src, dest *padmin.LookupData, topic string) bool {
 	if src.BrokerUrl != dest.BrokerUrl {
-		logs.Error("BrokerUrl [%s] pulsar topic split brain. src topic owner: %s", topic, src.BrokerUrl)
-		logs.Error("BrokerUrl [%s] pulsar topic split brain. dest topic owner: %s", topic, dest.BrokerUrl)
+		logrus.Errorf("BrokerUrl [%s] pulsar topic split brain. src topic owner: %s", topic, src.BrokerUrl)
+		logrus.Errorf("BrokerUrl [%s] pulsar topic split brain. dest topic owner: %s", topic, dest.BrokerUrl)
 		return false
 	}
 	if src.HttpUrl != dest.HttpUrl {
-		logs.Error("HttpUrl [%s] pulsar topic split brain. src topic owner: %s", topic, src.HttpUrl)
-		logs.Error("HttpUrl [%s] pulsar topic split brain. dest topic owner: %s", topic, dest.HttpUrl)
+		logrus.Errorf("HttpUrl [%s] pulsar topic split brain. src topic owner: %s", topic, src.HttpUrl)
+		logrus.Errorf("HttpUrl [%s] pulsar topic split brain. dest topic owner: %s", topic, dest.HttpUrl)
 		return false
 	}
 	if src.NativeUrl != dest.NativeUrl {
-		logs.Error("NativeUrl [%s] pulsar topic split brain. src topic owner: %s", topic, src.NativeUrl)
-		logs.Error("NativeUrl [%s] pulsar topic split brain. dest topic owner: %s", topic, dest.NativeUrl)
+		logrus.Errorf("NativeUrl [%s] pulsar topic split brain. src topic owner: %s", topic, src.NativeUrl)
+		logrus.Errorf("NativeUrl [%s] pulsar topic split brain. dest topic owner: %s", topic, dest.NativeUrl)
 		return false
 	}
 	if src.BrokerUrlTls != dest.BrokerUrlTls {
-		logs.Error("BrokerUrlTls [%s] pulsar topic split brain. src topic owner: %s", topic, src.BrokerUrlTls)
-		logs.Error("BrokerUrlTls [%s] pulsar topic split brain. dest topic owner: %s", topic, dest.BrokerUrlTls)
+		logrus.Errorf("BrokerUrlTls [%s] pulsar topic split brain. src topic owner: %s", topic, src.BrokerUrlTls)
+		logrus.Errorf("BrokerUrlTls [%s] pulsar topic split brain. dest topic owner: %s", topic, dest.BrokerUrlTls)
 		return false
 	}
 	if src.HttpUrlTls != dest.HttpUrlTls {
-		logs.Error("HttpUrlTls [%s] pulsar topic split brain. src topic owner: %s", topic, src.HttpUrlTls)
-		logs.Error("HttpUrlTls [%s] pulsar topic split brain. dest topic owner: %s", topic, dest.HttpUrlTls)
+		logrus.Errorf("HttpUrlTls [%s] pulsar topic split brain. src topic owner: %s", topic, src.HttpUrlTls)
+		logrus.Errorf("HttpUrlTls [%s] pulsar topic split brain. dest topic owner: %s", topic, dest.HttpUrlTls)
 		return false
 	}
 	return true

@@ -1,8 +1,8 @@
 package checker
 
 import (
-	"github.com/beego/beego/v2/core/logs"
 	"github.com/protocol-laboratory/pulsar-admin-go/padmin"
+	"github.com/sirupsen/logrus"
 	"os"
 	"paas-dashboard-go/module"
 	"strconv"
@@ -13,7 +13,7 @@ import (
 func pulsarConsumerAbnormalCheck(instance *module.PulsarInstance) {
 	defer func() {
 		if err := recover(); err != nil {
-			logs.Error("panic:", err)
+			logrus.Errorf("panic:%v", err)
 			return
 		}
 	}()
@@ -38,9 +38,9 @@ func pulsarConsumerAbnormalCheck(instance *module.PulsarInstance) {
 	}
 	ticker := time.NewTicker(time.Duration(interval) * time.Second)
 	for range ticker.C {
-		logs.Info("pulsar instance:[%s] consumer abnormal check start.", instance.Name)
+		logrus.Infof("pulsar instance:[%s] consumer abnormal check start.", instance.Name)
 		checkConsumerAbnormalInterval(admins)
-		logs.Info("pulsar instance:[%s] consumer abnormal check done.", instance.Name)
+		logrus.Infof("pulsar instance:[%s] consumer abnormal check done.", instance.Name)
 	}
 }
 
@@ -48,13 +48,13 @@ func checkConsumerAbnormalInterval(admins []*padmin.PulsarAdmin) {
 	for _, admin := range admins {
 		tenantList, err := admin.Tenants.List()
 		if err != nil {
-			logs.Error("[check consumer abnormal]get tenant list failed: %v", err)
+			logrus.Errorf("[check consumer abnormal]get tenant list failed: %v", err)
 			return
 		}
 		for _, tenant := range tenantList {
 			namespaceList, err := admin.Namespaces.List(tenant)
 			if err != nil {
-				logs.Error("[check consumer abnormal]get tenant %s namespace failed: %v", tenant, err)
+				logrus.Errorf("[check consumer abnormal]get tenant %s namespace failed: %v", tenant, err)
 				continue
 			}
 			for _, namespace := range namespaceList {
@@ -63,7 +63,7 @@ func checkConsumerAbnormalInterval(admins []*padmin.PulsarAdmin) {
 
 				topicList, err := admin.PersistentTopics.ListNamespaceTopics(tenant, ns)
 				if err != nil {
-					logs.Error("[check consumer abnormal]get tenant %s namespace %s topic list fail: %v", tenant, ns, err)
+					logrus.Errorf("[check consumer abnormal]get tenant %s namespace %s topic list fail: %v", tenant, ns, err)
 					continue
 				}
 
@@ -73,7 +73,7 @@ func checkConsumerAbnormalInterval(admins []*padmin.PulsarAdmin) {
 
 					topicStatistics, err := admin.PersistentTopics.GetStats(tenant, ns, topic)
 					if err != nil {
-						logs.Error("[check consumer abnormal]get stats failed:%v", err)
+						logrus.Errorf("[check consumer abnormal]get stats failed:%v", err)
 						continue
 					}
 					for _, sub := range topicStatistics.Subscriptions {
@@ -82,7 +82,7 @@ func checkConsumerAbnormalInterval(admins []*padmin.PulsarAdmin) {
 						}
 						sub := time.Now().UnixMilli() - int64(sub.LastConsumedFlowTimestamp)
 						if sub > int64(5*60*1000*time.Millisecond) {
-							logs.Warn("[check consumer abnormal] consumer abnormal! send flow %d ago,it seems to be broken consumer!")
+							logrus.Warnf("[check consumer abnormal] consumer abnormal! send flow %d millisecond ago,it seems to be broken consumer!", sub)
 						}
 					}
 				}
