@@ -7,6 +7,8 @@ require (
 	github.com/go-zookeeper/zk v1.0.3
 	github.com/protocol-laboratory/pulsar-admin-go v0.0.0-20230526085042-4fbf996be670
 	github.com/redis/go-redis/v9 v9.0.3
+	github.com/sirupsen/logrus v1.9.0
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	k8s.io/api v0.26.3
 	k8s.io/apimachinery v0.26.3
 	k8s.io/client-go v0.26.3
@@ -63,7 +65,6 @@ require (
 	github.com/prometheus/common v0.37.0 // indirect
 	github.com/prometheus/procfs v0.8.0 // indirect
 	github.com/shiena/ansicolor v0.0.0-20200904210342-c7312218db18 // indirect
-	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.8.2 // indirect
 	github.com/testcontainers/testcontainers-go v0.19.0 // indirect

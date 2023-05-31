@@ -5,10 +5,12 @@ import (
 	"github.com/beego/beego/v2/server/web/filter/cors"
 	"paas-dashboard-go/checker"
 	"paas-dashboard-go/controllers"
+	"paas-dashboard-go/log"
 	"path/filepath"
 )
 
 func main() {
+	log.InitLogger()
 	checker.Start()
 
 	root := filepath.Join(".", "static")
